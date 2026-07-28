@@ -23,7 +23,7 @@ export default async function handler(req: { method: string; url?: string; body?
   res.setHeader?.('Content-Type', 'application/json');
 
   const url = new URL(req.url ?? '/', 'https://notes-sage-mu.vercel.app');
-  const pathname = url.pathname.replace(/^\/api/, '');
+  const pathname = url.pathname.replace(/^\/api/, '') || '/';
 
   if (req.method === 'GET' && pathname === '/health') {
     return res.status(200).json({ status: 'ok' });
@@ -32,6 +32,22 @@ export default async function handler(req: { method: string; url?: string; body?
   if (req.method === 'GET' && pathname === '/notes') {
     const notes = await readNotes();
     return res.status(200).json({ notes, total: notes.length, page: 1, limit: notes.length });
+  }
+
+  if (req.method === 'POST' && pathname === '/notes') {
+    const body = req.body ?? {};
+    const note = {
+      id: `${Date.now()}`,
+      title: body.title ?? 'Untitled note',
+      content: body.content ?? 'Start writing...',
+      tags: Array.isArray(body.tags) ? body.tags : [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    const notes = await readNotes();
+    notes.unshift(note);
+    await writeFile(dataFile, JSON.stringify(notes, null, 2), 'utf8');
+    return res.status(201).json(note);
   }
 
   if (req.method === 'GET' && pathname === '/tags') {
