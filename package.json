@@ -24,6 +24,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.1",
     "@types/node": "^22.10.1",
@@ -31,6 +32,7 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.1",
     "concurrently": "^9.0.1",
+    "tailwindcss": "^4.3.3",
     "tsx": "^4.19.0",
     "typescript": "^5.7.1",
     "vite": "^5.4.10"
