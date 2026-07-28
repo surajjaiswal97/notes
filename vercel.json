@@ -7,7 +7,7 @@
       "config": { "distDir": "dist/client" }
     },
     {
-      "src": "api/index.ts",
+      "src": "api/**/*.ts",
       "use": "@vercel/node"
     }
   ],
