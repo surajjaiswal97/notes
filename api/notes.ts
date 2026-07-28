@@ -1,15 +1,47 @@
-import express from 'express';
-import serverless from 'serverless-http';
-import { createApp } from '../server/dist/app.js';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 
-const app = express();
-const apiApp = createApp();
+const dataFile = process.env.NOTES_DATA_FILE ?? (process.env.VERCEL ? '/tmp/notes.json' : path.resolve(process.cwd(), 'data/notes.json'));
 
-app.use('/api', apiApp);
-app.use('/', apiApp);
+async function ensureDataFile() {
+  const dir = path.dirname(dataFile);
+  await mkdir(dir, { recursive: true });
+  try {
+    await readFile(dataFile, 'utf8');
+  } catch {
+    await writeFile(dataFile, '[]', 'utf8');
+  }
+}
 
-app.use((_req, res) => {
-  res.status(404).json({ error: { message: 'Not found' } });
-});
+async function readNotes() {
+  await ensureDataFile();
+  const raw = await readFile(dataFile, 'utf8');
+  return JSON.parse(raw || '[]');
+}
 
-export default serverless(app, { binary: ['image/*'] });
+export default async function handler(req: { method: string; url?: string; body?: any; query?: Record<string, unknown> }, res: { status: (code: number) => any; json: (body: any) => any; setHeader?: (name: string, value: string) => void; end?: (body?: string) => any; }) {
+  res.setHeader?.('Content-Type', 'application/json');
+
+  const url = new URL(req.url ?? '/', 'https://notes-sage-mu.vercel.app');
+  const pathname = url.pathname.replace(/^\/api/, '');
+
+  if (req.method === 'GET' && pathname === '/health') {
+    return res.status(200).json({ status: 'ok' });
+  }
+
+  if (req.method === 'GET' && pathname === '/notes') {
+    const notes = await readNotes();
+    return res.status(200).json({ notes, total: notes.length, page: 1, limit: notes.length });
+  }
+
+  if (req.method === 'GET' && pathname === '/tags') {
+    const notes = await readNotes();
+    const counts = new Map<string, number>();
+    notes.forEach((note: { tags: string[] }) => {
+      note.tags.forEach((tag: string) => counts.set(tag, (counts.get(tag) ?? 0) + 1));
+    });
+    return res.status(200).json(Array.from(counts.entries()).map(([name, count]) => ({ name, count })));
+  }
+
+  return res.status(404).json({ error: { message: 'Not found' } });
+}
