@@ -25,23 +25,54 @@ const updateSchema = notesSchema.partial();
 const dataFile = process.env.NOTES_DATA_FILE ?? (process.env.VERCEL ? '/tmp/notes.json' : path.resolve(process.cwd(), 'data/notes.json'));
 
 async function ensureDataFile() {
-  await mkdir(path.dirname(dataFile), { recursive: true });
+  const dir = path.dirname(dataFile);
+  console.log(JSON.stringify({ t: new Date().toISOString(), m: 'ensureDataFile_start', dataFile, dir }));
+  try {
+    await mkdir(dir, { recursive: true });
+  } catch (err) {
+    console.error(JSON.stringify({ t: new Date().toISOString(), m: 'ensureDataFile_mkdir_error', error: String(err) }));
+    throw err;
+  }
+
   try {
     await readFile(dataFile, 'utf8');
-  } catch {
-    await writeFile(dataFile, '[]', 'utf8');
+    console.log(JSON.stringify({ t: new Date().toISOString(), m: 'ensureDataFile_exists', dataFile }));
+  } catch (err) {
+    console.log(JSON.stringify({ t: new Date().toISOString(), m: 'ensureDataFile_create', dataFile }));
+    try {
+      await writeFile(dataFile, '[]', 'utf8');
+      console.log(JSON.stringify({ t: new Date().toISOString(), m: 'ensureDataFile_written', dataFile }));
+    } catch (werr) {
+      console.error(JSON.stringify({ t: new Date().toISOString(), m: 'ensureDataFile_write_error', error: String(werr) }));
+      throw werr;
+    }
   }
 }
 
 async function readNotes(): Promise<Note[]> {
+  console.log(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_start', dataFile }));
   await ensureDataFile();
   const raw = await readFile(dataFile, 'utf8');
-  return JSON.parse(raw) as Note[];
+  try {
+    const parsed = JSON.parse(raw) as Note[];
+    console.log(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_done', count: parsed.length }));
+    return parsed;
+  } catch (err) {
+    console.error(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_parse_error', error: String(err) }));
+    throw err;
+  }
 }
 
 async function writeNotes(notes: Note[]) {
+  console.log(JSON.stringify({ t: new Date().toISOString(), m: 'writeNotes_start', dataFile, count: notes.length }));
   await ensureDataFile();
-  await writeFile(dataFile, JSON.stringify(notes, null, 2), 'utf8');
+  try {
+    await writeFile(dataFile, JSON.stringify(notes, null, 2), 'utf8');
+    console.log(JSON.stringify({ t: new Date().toISOString(), m: 'writeNotes_done', dataFile }));
+  } catch (err) {
+    console.error(JSON.stringify({ t: new Date().toISOString(), m: 'writeNotes_error', error: String(err) }));
+    throw err;
+  }
 }
 
 function normalizeTags(tags: string[] | undefined) {
