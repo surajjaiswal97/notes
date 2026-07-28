@@ -129,13 +129,22 @@ export default function App() {
     if (!selectedNote) {
       return;
     }
-    if (saveTimer.current) {
-      window.clearTimeout(saveTimer.current);
+
+    const currentDraft = {
+      title: draft.title || 'Untitled',
+      content: draft.content,
+      tags: draft.tags.split(',').map((tag) => tag.trim()).filter(Boolean)
+    };
+
+    const previousDraftRef = saveTimer.current;
+    if (previousDraftRef) {
+      window.clearTimeout(previousDraftRef);
     }
+
     saveTimer.current = window.setTimeout(async () => {
       setSaving(true);
       try {
-        const optimisticNote = { ...selectedNote, title: draft.title || 'Untitled', content: draft.content, tags: draft.tags.split(',').map((tag) => tag.trim()).filter(Boolean) };
+        const optimisticNote = { ...selectedNote, ...currentDraft };
         setNotes((current) => current.map((note) => (note.id === selectedNote.id ? optimisticNote : note)));
         await request<Note>(`/notes/${selectedNote.id}`, {
           method: 'PATCH',
@@ -149,6 +158,7 @@ export default function App() {
         setSaving(false);
       }
     }, 400);
+
     return () => {
       if (saveTimer.current) {
         window.clearTimeout(saveTimer.current);
@@ -165,6 +175,7 @@ export default function App() {
       });
       setNotes((current) => [created, ...current]);
       setSelectedId(created.id);
+      setDraft({ title: created.title, content: created.content, tags: created.tags.join(', ') });
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to create note');
