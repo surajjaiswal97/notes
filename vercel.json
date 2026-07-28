@@ -12,6 +12,7 @@
     }
   ],
   "routes": [
+    { "src": "/api/ping", "dest": "api/ping.ts" },
     { "src": "/api/(.*)", "dest": "api/index.ts" },
     { "src": "/(.*)", "dest": "/dist/client/$1" }
   ]

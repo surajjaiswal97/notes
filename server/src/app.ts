@@ -54,6 +54,12 @@ function sendError(res: Response, status: number, message: string, details?: unk
 
 export function createApp() {
   const app = express();
+  // lightweight request logging to help troubleshooting in serverless
+  app.use((req, _res, next) => {
+    // keep logs small and structured
+    console.log(JSON.stringify({ t: new Date().toISOString(), m: 'req_start', method: req.method, url: req.originalUrl }));
+    next();
+  });
 
   app.use(cors());
   app.use(express.json());
