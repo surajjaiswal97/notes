@@ -52,6 +52,7 @@ export default function App() {
   const [saving, setSaving] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme);
   const saveTimer = useRef<number | null>(null);
+  const skipNextSaveRef = useRef(false);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedNote = useMemo(() => notes.find((note) => note.id === selectedId) ?? null, [notes, selectedId]);
@@ -141,6 +142,11 @@ export default function App() {
       window.clearTimeout(previousDraftRef);
     }
 
+    if (skipNextSaveRef.current) {
+      skipNextSaveRef.current = false;
+      return;
+    }
+
     saveTimer.current = window.setTimeout(async () => {
       setSaving(true);
       try {
@@ -176,6 +182,7 @@ export default function App() {
       setNotes((current) => [created, ...current]);
       setSelectedId(created.id);
       setDraft({ title: created.title, content: created.content, tags: created.tags.join(', ') });
+      skipNextSaveRef.current = true;
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to create note');
