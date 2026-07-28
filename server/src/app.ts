@@ -49,29 +49,48 @@ async function ensureDataFile() {
   }
 }
 
+function withTimeout<T>(p: Promise<T>, ms: number, onTimeout?: () => void): Promise<T> {
+  let timer: NodeJS.Timeout;
+  const timeout = new Promise<T>((_resolve, reject) => {
+    timer = setTimeout(() => {
+      if (onTimeout) onTimeout();
+      reject(new Error('operation timed out'));
+    }, ms);
+  });
+  return Promise.race([p, timeout]).finally(() => clearTimeout(timer));
+}
+
 async function readNotes(): Promise<Note[]> {
   console.log(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_start', dataFile }));
   await ensureDataFile();
-  const raw = await readFile(dataFile, 'utf8');
   try {
-    const parsed = JSON.parse(raw) as Note[];
-    console.log(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_done', count: parsed.length }));
-    return parsed;
+    // protect against slow or stuck filesystem in serverless by timing out
+    const raw = await withTimeout(readFile(dataFile, 'utf8'), 2000, () => console.warn('readFile timed out'));
+    try {
+      const parsed = JSON.parse(raw as string) as Note[];
+      console.log(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_done', count: parsed.length }));
+      return parsed;
+    } catch (err) {
+      console.error(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_parse_error', error: String(err) }));
+      return [];
+    }
   } catch (err) {
-    console.error(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_parse_error', error: String(err) }));
-    throw err;
+    console.error(JSON.stringify({ t: new Date().toISOString(), m: 'readNotes_error', error: String(err) }));
+    // fallback to empty array instead of blocking the request
+    return [];
   }
 }
 
 async function writeNotes(notes: Note[]) {
   console.log(JSON.stringify({ t: new Date().toISOString(), m: 'writeNotes_start', dataFile, count: notes.length }));
   await ensureDataFile();
+  // perform write but do not block the response for a long time; log on timeout
   try {
-    await writeFile(dataFile, JSON.stringify(notes, null, 2), 'utf8');
+    await withTimeout(writeFile(dataFile, JSON.stringify(notes, null, 2), 'utf8'), 2000, () => console.warn('writeFile timed out'));
     console.log(JSON.stringify({ t: new Date().toISOString(), m: 'writeNotes_done', dataFile }));
   } catch (err) {
     console.error(JSON.stringify({ t: new Date().toISOString(), m: 'writeNotes_error', error: String(err) }));
-    throw err;
+    // do not throw — we prefer to keep the API responsive even if persistence fails
   }
 }
 
