@@ -285,17 +285,17 @@ export default function App() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="mb-2 text-sm font-semibold uppercase tracking-[0.24em] text-indigo-500">Notes Studio</p>
-              <h1 className="text-3xl font-semibold">Write, organize, and revisit your ideas</h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400">Create notes, add tags, and preview markdown in a clean workspace designed for flow.</p>
+              <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">Write, organize, and revisit your ideas</h1>
+              <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">Create notes, add tags, and preview markdown in a clean workspace designed for flow.</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100">
                 {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
               </button>
               <button onClick={openCreateDialog} className="rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-700">
                 + New note
               </button>
-              <button onClick={resetView} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              <button onClick={resetView} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100">
                 Reset filters
               </button>
             </div>
@@ -384,28 +384,28 @@ export default function App() {
         </main>
 
         {isDialogOpen ? (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 p-4" onClick={() => setIsDialogOpen(false)}>
-            <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900" onClick={(event) => event.stopPropagation()}>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/75 p-4" onClick={() => setIsDialogOpen(false)}>
+            <div className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-950 p-5 shadow-2xl text-slate-100" onClick={(event) => event.stopPropagation()}>
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-xl font-semibold">{dialogMode === 'create' ? 'New note' : 'Edit note'}</h3>
-                <button onClick={() => setIsDialogOpen(false)} className="rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-700 dark:border-slate-700 dark:text-slate-200">Close</button>
+                <h3 className="text-xl font-semibold text-slate-50">{dialogMode === 'create' ? 'New note' : 'Edit note'}</h3>
+                <button onClick={() => setIsDialogOpen(false)} className="rounded-2xl border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100">Close</button>
               </div>
               <div className="mt-4 flex flex-col gap-4">
-                <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label className="flex flex-col gap-2 text-sm font-medium text-slate-200">
                   <span>Title</span>
-                  <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 outline-none transition focus:border-indigo-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800" />
+                  <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} className="rounded-2xl border border-slate-600 bg-slate-900 px-3 py-2.5 text-slate-100 outline-none transition focus:border-indigo-400 focus:bg-slate-900" />
                 </label>
-                <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label className="flex flex-col gap-2 text-sm font-medium text-slate-200">
                   <span>Tags</span>
-                  <input value={draft.tags} onChange={(e) => setDraft((current) => ({ ...current, tags: e.target.value }))} placeholder="tag1, tag2" className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 outline-none transition focus:border-indigo-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800" />
+                  <input value={draft.tags} onChange={(e) => setDraft((current) => ({ ...current, tags: e.target.value }))} placeholder="tag1, tag2" className="rounded-2xl border border-slate-600 bg-slate-900 px-3 py-2.5 text-slate-100 outline-none transition focus:border-indigo-400 focus:bg-slate-900" />
                 </label>
-                <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label className="flex flex-col gap-2 text-sm font-medium text-slate-200">
                   <span>Content</span>
-                  <textarea value={draft.content} onChange={(e) => setDraft((current) => ({ ...current, content: e.target.value }))} rows={12} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 outline-none transition focus:border-indigo-400 focus:bg-white dark:border-slate-700 dark:bg-slate-800" />
+                  <textarea value={draft.content} onChange={(e) => setDraft((current) => ({ ...current, content: e.target.value }))} rows={12} className="rounded-2xl border border-slate-600 bg-slate-900 px-3 py-2.5 text-slate-100 outline-none transition focus:border-indigo-400 focus:bg-slate-900" />
                 </label>
               </div>
               <div className="mt-5 flex justify-end gap-2">
-                <button className="rounded-2xl border border-slate-200 px-4 py-2 text-sm text-slate-700 dark:border-slate-700 dark:text-slate-200" onClick={() => setIsDialogOpen(false)}>Cancel</button>
+                <button className="rounded-2xl border border-slate-600 bg-slate-800 px-4 py-2 text-sm text-slate-100" onClick={() => setIsDialogOpen(false)}>Cancel</button>
                 <button className="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700" onClick={() => void saveDraft()}>{dialogMode === 'create' ? 'Create note' : 'Save changes'}</button>
               </div>
             </div>
@@ -413,12 +413,12 @@ export default function App() {
         ) : null}
 
         {isDeleteDialogOpen ? (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 p-4" onClick={() => setIsDeleteDialogOpen(false)}>
-            <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900" onClick={(event) => event.stopPropagation()}>
-              <h3 className="text-xl font-semibold">Delete note?</h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">This action cannot be undone. Delete this note permanently?</p>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/75 p-4" onClick={() => setIsDeleteDialogOpen(false)}>
+            <div className="w-full max-w-md rounded-3xl border border-slate-700 bg-slate-950 p-5 shadow-2xl text-slate-100" onClick={(event) => event.stopPropagation()}>
+              <h3 className="text-xl font-semibold text-slate-50">Delete note?</h3>
+              <p className="mt-2 text-sm text-slate-300">This action cannot be undone. Delete this note permanently?</p>
               <div className="mt-5 flex justify-end gap-2">
-                <button className="rounded-2xl border border-slate-200 px-4 py-2 text-sm text-slate-700 dark:border-slate-700 dark:text-slate-200" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</button>
+                <button className="rounded-2xl border border-slate-600 bg-slate-800 px-4 py-2 text-sm text-slate-100" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</button>
                 <button className="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-700" onClick={() => void deleteNote()}>Delete</button>
               </div>
             </div>

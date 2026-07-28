@@ -25,6 +25,64 @@ body {
   background: linear-gradient(135deg, #020617 0%, #111827 100%);
 }
 
+:root[data-theme='dark'] .dark\:bg-slate-900\/70 {
+  background-color: rgba(2, 6, 23, 0.95) !important;
+}
+
+:root[data-theme='dark'] .dark\:bg-slate-800\/60 {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+}
+
+:root[data-theme='dark'] .dark\:bg-slate-800\/40 {
+  background-color: rgba(15, 23, 42, 0.86) !important;
+}
+
+:root[data-theme='dark'] .dark\:border-slate-700\/70 {
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+:root[data-theme='dark'] .dark\:text-slate-400 {
+  color: #cbd5e1 !important;
+}
+
+:root[data-theme='dark'] .dark\:text-slate-300 {
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme='dark'] .dark\:text-slate-200 {
+  color: #f8fafc !important;
+}
+
+:root[data-theme='dark'] .dark\:bg-indigo-950\/40 {
+  background-color: rgba(49, 46, 129, 0.52) !important;
+}
+
+:root[data-theme='dark'] .dark\:bg-rose-950\/40 {
+  background-color: rgba(127, 29, 29, 0.45) !important;
+}
+
+:root[data-theme='dark'] input,
+:root[data-theme='dark'] select,
+:root[data-theme='dark'] textarea {
+  color: #f8fafc !important;
+  background-color: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.35) !important;
+}
+
+:root[data-theme='dark'] input::placeholder,
+:root[data-theme='dark'] textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+:root[data-theme='dark'] label,
+:root[data-theme='dark'] .dark\:text-slate-700 {
+  color: #f8fafc !important;
+}
+
+:root[data-theme='dark'] .dark\:bg-slate-50\/60 {
+  background-color: rgba(15, 23, 42, 0.72) !important;
+}
+
 button, input, select, textarea {
   font: inherit;
 }
